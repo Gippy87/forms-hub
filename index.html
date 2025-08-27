@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Forms Hub</title>
+  <meta name="description" content="One QR code → many forms. A simple, responsive hub you can update anytime." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E🧭%3C/text%3E%3C/svg%3E">
+  <style>
+    /* ---- CSS RESET (trimmed) ---- */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;line-height:1.5; -webkit-font-smoothing:antialiased}
+    img,svg,video,canvas{display:block;max-width:100%}
+    input,button,textarea,select{font:inherit}
+
+    /* ---- THEME ---- */
+    :root{
+      --bg:#0b1220;           /* deep navy */
+      --card:#0f172a;         /* slate-900 */
+      --muted:#94a3b8;        /* slate-400 */
+      --text:#e2e8f0;         /* slate-200 */
+      --primary:#22c55e;      /* green-500 */
+      --primary-2:#16a34a;    /* green-600 */
+      --ring:#1f2937;         /* gray-800 */
+      --tile:#111827;         /* gray-900 */
+      --tile-hover:#0b1324;   /* slightly lighter */
+      --danger:#ef4444;       /* red-500 */
+      --warning:#f59e0b;      /* amber-500 */
+      --info:#3b82f6;         /* blue-500 */
+      --radius:18px;
+      --shadow: 0 10px 25px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    body{background: radial-gradient(1000px 600px at 10% -10%, #1b2a4a 0%, transparent 60%),
+                         radial-gradient(800px 500px at 110% 10%, #15314a 0%, transparent 55%),
+                         var(--bg);
+         color:var(--text);
+         font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    /* ---- LAYOUT ---- */
+    .container{max-width:1100px;margin-inline:auto;padding:22px}
+    header{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#22c55e33,#3b82f633);
+          box-shadow: inset 0 0 0 1px #22c55e55, 0 10px 20px rgba(0,0,0,.25)}
+    .brand h1{font-size:1.35rem;letter-spacing:.2px;margin:0}
+    .sub{color:var(--muted);font-size:.95rem}
+
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .search{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:999px;padding:10px 14px;box-shadow:var(--shadow)}
+    .search input{background:transparent;border:0;color:var(--text);outline:none;width:220px}
+    .chipbar{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{border-radius:999px;padding:8px 12px;background:var(--card);color:var(--muted);cursor:pointer;user-select:none;border:1px solid var(--ring)}
+    .chip.active{background:linear-gradient(135deg,#22c55e33,#3b82f633);color:#fff;border-color:#22c55e66}
+
+    .grid{display:grid;grid-template-columns: repeat(12, 1fr); gap:14px;margin-top:16px}
+    @media (max-width:1000px){.grid{grid-template-columns: repeat(8, 1fr)}}
+    @media (max-width:700px){.grid{grid-template-columns: repeat(4, 1fr)}}
+
+    .tile{grid-column: span 4; background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), var(--tile);
+          border-radius: var(--radius); padding:18px; display:flex; flex-direction:column; gap:12px; position:relative; box-shadow: var(--shadow);
+          transition: transform .18s ease, background .18s ease; min-height:140px}
+    .tile:hover{transform: translateY(-2px); background: var(--tile-hover)}
+    .tile .row{display:flex;align-items:center;gap:12px}
+    .icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:#0b1b2f;
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,.06)}
+    .title{font-weight:700;letter-spacing:.2px}
+    .desc{color:var(--muted);font-size:.95rem}
+    .meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+    .badge{border-radius:6px;padding:2px 8px;font-size:.8rem;background:rgba(255,255,255,.08);border:1px solid var(--ring)}
+    .tag{border-radius:999px;padding:3px 8px;border:1px solid var(--ring)}
+
+    .tile a.btn{margin-top:auto;align-self:flex-start;border:1px solid #2a3a55;background:linear-gradient(135deg,#22c55e,#16a34a);
+      color:white;text-decoration:none;border-radius:10px;padding:9px 12px;display:inline-flex;gap:8px;align-items:center;font-weight:600}
+    .tile a.btn:hover{filter:saturate(1.15)}
+
+    footer{margin:26px 0;color:var(--muted);font-size:.9rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .muted-link{color:var(--muted);text-decoration:none}
+    .muted-link:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🔗</div>
+        <div>
+          <h1>Forms Hub</h1>
+          <div class="sub">One QR code → many forms. Search, tap, done.</div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="search" role="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="q" type="search" placeholder="Search forms…" autocomplete="off" />
+        </div>
+        <div class="chipbar" id="chipbar"></div>
+      </div>
+    </header>
+
+    <main class="grid" id="grid" aria-live="polite"></main>
+
+    <footer>
+      <div>
+        <span id="count"></span> • Last updated <span id="lastUpdated"></span>
+      </div>
+      <div>
+        <a class="muted-link" href="#" id="editLink">How to edit this page</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    /* =============================================
+       EDIT ME: Add/remove forms in the FORMS array
+       Fields: title, url, description, tags[], icon, badge
+       ============================================= */
+    const FORMS = [
+      {
+        title: "Aircraft Discrepancy Report",
+        url: "https://forms.office.com/your-form-1",
+        description: "Quick report for flight line issues and hazards.",
+        tags: ["QA", "Safety"],
+        icon: "🛩️",
+        badge: "NEW"
+      },
+      {
+        title: "Visitor Feedback",
+        url: "https://forms.office.com/your-form-2",
+        description: "Public feedback for facility tours and events.",
+        tags: ["Public", "Feedback"],
+        icon: "💬"
+      },
+      {
+        title: "Tool Crib Request",
+        url: "https://forms.office.com/your-form-3",
+        description: "Request tools or report shortages.",
+        tags: ["Maintenance"],
+        icon: "🧰"
+      },
+      {
+        title: "Training Sign‑In",
+        url: "https://forms.office.com/your-form-4",
+        description: "Scan to sign in for training sessions.",
+        tags: ["Training"],
+        icon: "✍️",
+        badge: "HOT"
+      }
+    ];
+
+    /* ===== Utility: format date & dedupe tags ===== */
+    function niceDate(d){
+      const fmt = new Intl.DateTimeFormat(undefined,{year:'numeric',month:'short',day:'2-digit'});
+      return fmt.format(d);
+    }
+    const lastUpdated = new Date(document.lastModified || Date.now());
+    document.getElementById('lastUpdated').textContent = niceDate(lastUpdated);
+
+    const allTags = Array.from(new Set(FORMS.flatMap(f => f.tags || []))).sort();
+
+    /* ===== Render filter chips ===== */
+    const chipbar = document.getElementById('chipbar');
+    const chips = [{label:'All', value:'__all'}].concat(allTags.map(t => ({label:t, value:t})));
+    let activeTag = '__all';
+
+    chips.forEach(ch => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'chip' + (ch.value === activeTag ? ' active' : '');
+      b.textContent = ch.label;
+      b.setAttribute('data-val', ch.value);
+      b.addEventListener('click', () => {
+        activeTag = ch.value;
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        b.classList.add('active');
+        render();
+      });
+      chipbar.appendChild(b);
+    });
+
+    /* ===== Search + Render grid ===== */
+    const grid = document.getElementById('grid');
+    const q = document.getElementById('q');
+    q.addEventListener('input', () => render());
+
+    function matches(form, query){
+      if(!query) return true;
+      const hay = (form.title + ' ' + (form.description||'') + ' ' + (form.tags||[]).join(' ')).toLowerCase();
+      return hay.includes(query.toLowerCase());
+    }
+
+    function tagOk(form){
+      if(activeTag==='__all') return true;
+      return (form.tags||[]).includes(activeTag);
+    }
+
+    function render(){
+      const query = q.value.trim();
+      grid.innerHTML = '';
+      const filtered = FORMS.filter(f => matches(f, query) && tagOk(f));
+      document.getElementById('count').textContent = `${filtered.length} form${filtered.length===1?'':'s'}`;
+
+      filtered.forEach(f => {
+        const card = document.createElement('article');
+        card.className = 'tile';
+        card.innerHTML = `
+          <div class="row">
+            <div class="icon" aria-hidden="true">${f.icon||'📄'}</div>
+            <div>
+              <div class="title">${f.title}</div>
+              <div class="meta">${(f.badge?`<span class='badge'>${f.badge}</span>`:'')}
+                ${(f.tags||[]).map(t=>`<span class='tag'>${t}</span>`).join(' ')}
+              </div>
+            </div>
+          </div>
+          <div class="desc">${f.description||''}</div>
+          <a class="btn" href="${f.url}" target="_blank" rel="noopener noreferrer" aria-label="Open ${f.title} in a new tab">Open form →</a>
+        `;
+        grid.appendChild(card);
+      });
+
+      if(filtered.length===0){
+        const empty = document.createElement('div');
+        empty.style.gridColumn = '1 / -1';
+        empty.style.color = 'var(--muted)';
+        empty.style.textAlign = 'center';
+        empty.style.padding = '40px 0';
+        empty.textContent = 'No forms match your search or filter.';
+        grid.appendChild(empty);
+      }
+    }
+
+    render();
+
+    // Helper: quick instructions link
+    document.getElementById('editLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert(`To edit:\n1) Open this file in any text editor.\n2) Find the FORMS array near the bottom of the file.\n3) Add, remove, or edit entries (title, url, description, tags, icon).\n4) Save and redeploy. No need to reprint the QR code.`);
+    });
+  </script>
+</body>
+</html>
